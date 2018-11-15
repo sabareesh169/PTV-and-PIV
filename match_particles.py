@@ -1,3 +1,14 @@
+"""
+This scripts solves ...
+
+Author:
+    First, Last
+
+Date:
+    11/15/2018
+"""
+
+
 from pyDOE import lhs
 import matplotlib
 import matplotlib.pyplot as plt
@@ -8,9 +19,14 @@ from sklearn.metrics import mean_squared_error
 import pandas as pd
 import scipy.io
 
-## Initializing NN
 
 def initialize_NN(layers):
+    """
+    Initializes the NN.
+
+    :param layers: What am I?
+    :returns: A blah blah
+    """
     weights = []
     biases = []
     num_layers = len(layers) 
