@@ -1,8 +1,8 @@
 """
-This scripts solves ...
+This scripts does both PTV and PIV given the locations of points. It gives out a continuous function for velocity and pressure. 
 
 Author:
-    First, Last
+    Ilias Bilionis, Sabareesh Mamidipaka
 
 Date:
     11/15/2018
@@ -22,10 +22,10 @@ import scipy.io
 
 def initialize_NN(layers):
     """
-    Initializes the NN.
+    Structure and initilization of the NN.
 
-    :param layers: What am I?
-    :returns: A blah blah
+    :param layers: A list of neurons in each layer(including the input and output layers)
+    :returns: The intialized weights and biases of the required choice of the hidden layers
     """
     weights = []
     biases = []
@@ -38,6 +38,12 @@ def initialize_NN(layers):
     return weights, biases
     
 def xavier_initialisation(size):
+    """
+    Initializes the NN.
+
+    :param size: The dimensions
+    :returns: The intialized weights and biases of the required choice of the hidden layers
+    """
     in_dim = size[0]
     out_dim = size[1]        
     xavier_stddev = np.sqrt(200/(in_dim + out_dim))
