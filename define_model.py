@@ -55,10 +55,11 @@ class PIV:
             sampling_sigma(self, self.optimizer_sigma, self.sess.run(self.pos_pred), final_index)
         self.index=index            
 
-    def PIV(self, n_iter):
+    def unknown_vel(self, n_iter):
         for i in range(n_iter):
             sampling_theta(self.optimzer_vel, self.optimzer_phy, self.initial, self.final, self.t_initial, self.t_final)
-
+            sampling_sigma(self, self.optimizer_sigma, self.sess.run(self.pos_pred), final_index)
+            
     def vel_predict(self, t, x, y):
         scaled_pos= rescale_test(np.concatenate((x,y)), self.mu_train_pos, self.sigma_train_pos)
         scaled_t= t/self.t_scale
