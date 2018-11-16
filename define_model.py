@@ -10,15 +10,19 @@ import scipy.io
 
 
 class PIV:
+    """
+    Takes in the position of the particles at two different time instants.
+    Matches the positions of the corresponsing particles.
+    Then predicts velocity and 
+    """
 
     def __init__(self, initial, final, t_initial, t_final, vel_layers, radius):
+        
         self.sess = tf.Session()
         self.initial = initial.astype(np.float32)
         self.final = final.astype(np.float32)
         self.t_initial = t_initial.astype(np.float32)
         self.t_final = t_final.astype(np.float32)
-
-        self.vel_weights, self.vel_biases = initialize_NN(vel_layers)
 
         self.initial_ch, self.mu_train_pos, self.sigma_train_pos=rescale(initial)
         self.final_ch=rescale_test(final, self.mu_train_pos, self.sigma_train_pos)
@@ -28,6 +32,8 @@ class PIV:
 
         tree=spatial.KDTree(initial)
         self.list_=tree.query_ball_point(initial, radius)
+        
+        self.vel_weights, self.vel_biases = initialize_NN(vel_layers)
         self.vel_pred = neural_net(self.t_initial_ch, self.initial_ch[:,0][:,None], self.initial_ch[:,1][:,None], self.vel_weights, self.vel_biases)
 
         self.vel_sample = tf.placeholder(tf.float32, shape=(initial.shape[0], 2))
