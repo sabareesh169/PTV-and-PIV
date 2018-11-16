@@ -12,9 +12,9 @@ class VelocityModel:
         self.rho = rho
         self.mu = mu
 
-        self.vel_NN = neural_net(bs.t_initial_norm, bs.initial_pos[:,0][:,None], bs.initial_pos[:,1][:,None], self.vel_weights, self.vel_biases)
+        self.vel_NN = neural_net(ParticleData.t_initial_norm, ParticleData.initial_pos[:,0][:,None], ParticleData.initial_pos[:,1][:,None], self.vel_weights, self.vel_biases)
 
-        self.vel_sample = tf.placeholder(tf.float32, shape=(bs.initial_pos.shape[0], 2))
+        self.vel_sample = tf.placeholder(tf.float32, shape=(ParticleData.initial_pos.shape[0], 2))
         self.loss_vel = tf.reduce_sum(tf.square(self.vel_NN[:,:2] - self.vel_sample))
         self.loss_NS_x, self.loss_NS_y, self.loss_cont = self.residue(self.vel_weights, self.vel_biases)
         self.total_residue = self.loss_NS_x + self.loss_NS_y + self.loss_cont
@@ -34,7 +34,7 @@ class VelocityModel:
         x_f = tf.reshape(X_c[:,0], shape=[-1,1])
         y_f = tf.reshape(X_c[:,1], shape=[-1,1])
         t_c = lhs(1, samples=collacation_points, criterion='m').astype(np.float32)
-        t_c = tf.reshape(np.asarray(np.min(bs.time_bound[0])+t_c*(bs.time_bound[1]-bs.time_bound[0])), shape=[-1,1])            
+        t_c = tf.reshape(np.asarray(np.min(ParticleData.time_bound[0])+t_c*(ParticleData.time_bound[1]-ParticleData.time_bound[0])), shape=[-1,1])            
         vel = neural_net(t_c, x_f, y_f, vel_weights, vel_biases)
 
         u_x = tf.gradients(vel[:,0], x_f)
