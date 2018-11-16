@@ -8,7 +8,7 @@ The position data is then used to form multiple clusters to limit the possible m
 
 class ParticleData:
 
-    def __init__(self, initial_pos, final_pos, t_initial, t_final, vel_layers, radius):
+    def __init__(self, initial_pos, final_pos, t_initial, t_final, radius):
         self.sess = tf.Session()
         self.initial_pos = initial_pos.astype(np.float32)
         self.final_pos = final_pos.astype(np.float32)
