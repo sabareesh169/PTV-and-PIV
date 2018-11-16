@@ -14,11 +14,16 @@ def sampling_sigma(optimizer_sigma, pred, final_index):
     for i in range(50):
         optimzer_sigma.run(feed_dict={likelihood: np.sum((pred-final[index])**2)})
 
-def sampling_theta(optimzer_theta, initial, final_index, t_initial, t_final, c_l, c_t):
-            sample_x_data_ch = tf.constant(final[index][:, 0][:, None], dtype=tf.float32)/c_l
-        sample_y_data_ch = tf.constant(final[index][:, 1][:, None], dtype=tf.float32)/c_l
-        final_ch = tf.concat([sample_x_data_ch, sample_y_data_ch], 1)/c_l 
-
-        true_vel_x_ch = sess.run((sample_x_data_ch - initial_x_data_ch)/(t_final_data_ch - t_initial_data_ch))
-        true_vel_y_ch = sess.run((sample_y_data_ch - initial_y_data_ch)/(t_final_data_ch - t_initial_data_ch))
-        true_vel_ch = np.concatenate([true_vel_x_ch, true_vel_y_ch], axis=1)
+def optimize_theta(optimzer_vel, optimizer_phy, true_vel_ch):
+    for i in range(50):
+        optimzer_vel.run(feed_dict={vel_sample: true_vel_ch})
+        optimzer_phy.run()
+        
+def sampling_theta(optimzer_vel, optimzer_phy, initial, final_index, t_initial, t_final, c_l, c_t):
+    sample_x_data_ch = final_index[:, 0][:, None].astype(np.float32)/c_l
+    sample_y_data_ch = final_index[:, 1][:, None].astype(np.float32)/c_l
+    
+    true_vel_x_ch = (sample_x_data_ch - initial_x_data_ch)/(t_final_data_ch - t_initial_data_ch)
+    true_vel_y_ch = (sample_y_data_ch - initial_y_data_ch)/(t_final_data_ch - t_initial_data_ch)
+    true_vel_ch = np.concatenate([true_vel_x_ch, true_vel_y_ch], axis=1)
+    optimize_theta(optimzer_vel, optimizer_phy, true_vel_ch)
