@@ -20,23 +20,17 @@ class PIV:
         self.ub = ub
         self.vel_layers = vel_layers
         self.vel_weights, self.vel_biases = initialize_NN(vel_layers)
-        
-        self.c_l = np.float32(np.max(ub[1:]))
-        self.c_t = np.float32(np.max(ub[0]))
 
-        self.initial_x_data = initial[:, 0][:, None].astype(np.float32)
-        self.initial_y_data = initial[:, 1][:, None].astype(np.float32)
+        self.initial = train_data[:,[0,1]].astype(np.float32)
  
-        self.initial_x_data_ch = tf.constant(initial[:, 0][:, None], name='x_init_ch', dtype=tf.float32)/c_l
-        self.initial_y_data_ch = tf.constant(initial[:, 1][:, None], name='y_init_ch', dtype=tf.float32)/c_l
-        self.initial_ch = tf.concat([self.initial_x_data, self.initial_y_data], 1)/c_l 
+        self.initial_ch, self.mu_train_pos, self.sigma_train_pos=rescale(initial)
 
-        self.final_x_data = tf.constant(final[:, 0][:, None], name='x_final', dtype=tf.float32)
-        self.final_y_data = tf.constant(final[:, 1][:, None], name='y_final', dtype=tf.float32)
+        self.final = train_data[:,[2,3]].astype(np.float32)
 
-        self.final_x_data_ch = tf.constant(final[:, 0][:, None], name='x_final_ch', dtype=tf.float32)/c_l
-        self.final_y_data_ch = tf.constant(final[:, 1][:, None], name='y_final_ch', dtype=tf.float32)/c_l
-        self.final_ch = tf.concat([self.final_x_data, self.final_y_data], 1)/c_l 
+        self.final_ch=rescale(final, self.mu_train_pos, self.sigma_train_pos)
+
+        self.t_initial_ch, self.mu_train_t, self.sigma_train_t=rescale(t_initial)
+        self.t_final_ch = rescale_test(t_final, self.mu_train_t, self.sigma_train_t)
 
         self.t_initial_data = tf.constant(t_initial.astype(np.float32)[:, None], name='t_init')
         self.t_final_data = tf.constant(t_final.astype(np.float32)[:, None], name='t_final')
