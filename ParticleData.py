@@ -3,7 +3,7 @@
 This class takes in the particle data and scales the data for better functioning of the DNN's.
 The postional data is normalised w.r.t the initial position of the particles. 
 The time data is 'normalized' differently to avoid (potentially) division with zero.
-
+The position data is then used to form multiple clusters to limit the possible matches for each initial point.
 """
 
 class ParticleData:
@@ -24,6 +24,9 @@ class ParticleData:
 
         self.initial_pos_norm = self.rescale_pos_data(initial_pos)
         self.final_pos_norm = self.rescale_pos_data(final_pos)
+
+        tree=spatial.KDTree(initial)
+        self.cluster=tree.query_ball_point(initial, radius)
         
     def rescale_pos_data(self, array):
         rescaled = (array - self.mean_pos)/ self.sigma_pos)
