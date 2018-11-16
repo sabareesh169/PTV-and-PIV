@@ -29,7 +29,7 @@ class ParticleData:
         self.cluster=tree.query_ball_point(initial, radius)
         
     def rescale_pos_data(self, array):
-        rescaled = (array - self.mean_pos)/ self.sigma_pos)
+        rescaled = ((array - self.mean_pos)/ self.sigma_pos)
         return rescaled
     
     def rescale_time_data(self, array):
