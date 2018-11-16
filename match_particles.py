@@ -49,13 +49,13 @@ def xavier_initialisation(size):
     xavier_stddev = np.sqrt(200/(in_dim + out_dim))
     return tf.Variable(tf.truncated_normal([in_dim, out_dim], stddev=xavier_stddev), dtype=tf.float32)
 
-def neural_net(t, x, y, weights, biases):
+def neural_net(t, pos, weights, biases):
     """
     Forward propogation of the Neural Network
     :param size: Time and position of the particle and the parameters of the network
     :returns: Velocity and pressure
     """
-    X = tf.concat([t,x,y],1)
+    X = tf.concat([t,pos],1)
     num_layers = len(weights) 
     H = X
     for l in range(num_layers):
