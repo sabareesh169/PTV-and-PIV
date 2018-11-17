@@ -39,13 +39,13 @@ class ParticleData:
         :param array: any spatial data to be normalized w.r.t the mean and variance of the initial position
         :returns: normalized data
         """
-        rescaled = ((array - self.mean_pos)/ self.sigma_pos)
+        normalized_data = ((array - self.mean_pos)/ self.sigma_pos)
         return rescaled
     
-    def rescale_time_data(self, array):
+    def rescale_time_data(self, time, position):
         """
         :param array: any temporal data to be scaled appropriately w.r.t to the final time
         :returns: normalized data
         """
-        rescaled =  array/ self.max_time
-        return rescaled
+        normalized_data =  np.ones((position.shape[0],1))*time/ self.max_time
+        return normalized_data
