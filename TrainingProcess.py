@@ -38,9 +38,9 @@ class TrainingProcess:
             sampling_theta(self, self.optimizer_vel, self.ParticleData.initial_pos, self.ParticleData.final_pos, self.ParticleData.t_initial, self.ParticleData.t_final)
             sampling_sigma(self, self.optimizer_sigma, self.sess.run(self.VelocityModel.pos_NN), self.ParticleData.final_pos)
 
-    def predict_velocity(self, t, x, y):
+    def vel_predict(self, t, x, y):
         """
         :param : the time and position of the point.
         :returns: velocity at the particular position and time.
         """
-        return self.sess.run(                    
+        return self.sess.run(self.VelocityModel.vel_predict(t,x,y))                   
