@@ -4,7 +4,6 @@ class VelocityModel:
     Calculates the residuals for the governing equations at random collacation points.
     Assign a probability function for the matched particles.
     Assign a probability function for the value of sigma.
-
     """
 
     def __init__(self, ParticleData, vel_layers, rho, mu, collacation_points=1000):
@@ -78,7 +77,7 @@ class VelocityModel:
         :param : time and position 
         :returns: predicted velocity of the fluid at that position and time
         """
-        scaled_pos = self.ParticleData.rescale_test(np.concatenate((x,y)))
+        scaled_pos = self.ParticleData.rescale_pos_data(np.concatenate((x,y),axis=1))
         scaled_t = self.ParticleData.rescale_time_data(t,x)
         scaled_vel=neural_net(scaled_t, scaled_pos[:,0][:,None], scaled_pos[:,1][:,None], self.vel_weights, self.vel_biases)[:,:2]
         vel= scaled_vel*self.ParticleData.sigma_pos/self.ParticleData.max_time
