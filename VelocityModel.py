@@ -14,11 +14,11 @@ class VelocityModel:
         self.collacation_points=collacation_points
         self.ParticleData=ParticleData
         
-        self.vel_NN = neural_net(ParticleData.t_initial_norm, ParticleData.initial_pos[:,0][:,None], ParticleData.initial_pos[:,1][:,None], self.vel_weights, self.vel_biases)
-        self.pos_NN = self.vel_NN[:,:2]*self.ParticleData.sigma_pos*(ParticleData.t_initial- ParticleData.t_final)/self.ParticleData.max_time
+        self.vel_NN = neural_net(ParticleData.t_initial_norm, ParticleData.initial_pos_norm[:,0][:,None], ParticleData.initial_pos_norm[:,1][:,None], self.vel_weights, self.vel_biases)[:,:2]
+        self.pos_NN = ParticleData.initial_pos + self.vel_NN*self.ParticleData.sigma_pos*(ParticleData.t_initial- ParticleData.t_final)/self.ParticleData.max_time
         
         self.vel_sample = tf.placeholder(tf.float32, shape=(ParticleData.initial_pos.shape[0], 2))
-        self.loss_vel = tf.reduce_sum(tf.square(self.vel_NN[:,:2] - self.vel_sample))
+        self.loss_vel = tf.reduce_sum(tf.square(self.vel_NN - self.vel_sample))
         self.loss_NS_x, self.loss_NS_y, self.loss_cont = self.residue(self.vel_weights, self.vel_biases)
         self.total_residue = self.loss_NS_x + self.loss_NS_y + self.loss_cont
         alpha = tf.constant(0.001, dtype=tf.float32)
