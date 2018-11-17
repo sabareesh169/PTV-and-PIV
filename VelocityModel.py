@@ -79,8 +79,8 @@ class VelocityModel:
         :returns: predicted velocity of the fluid at that position and time
         """
         scaled_pos = self.ParticleData.rescale_test(np.concatenate((x,y)))
-        scaled_t = t/self.ParticleData.t_scale
-        scaled_vel=neural_net(t,x,y,self.vel_weights, self.vel_biases)[:,:2]
+        scaled_t = self.ParticleData.rescale_time_data(t,x)
+        scaled_vel=neural_net(scaled_t, scaled_pos[:,0][:,None], scaled_pos[:,1][:,None], self.vel_weights, self.vel_biases)[:,:2]
         vel= scaled_vel*self.ParticleData.sigma_pos/self.ParticleData.max_time
         return vel
     
