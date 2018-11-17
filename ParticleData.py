@@ -27,6 +27,7 @@ class ParticleData:
 
         tree=spatial.KDTree(initial)
         self.cluster=tree.query_ball_point(initial, radius)
+        self.time_bound=[np.min(self.t_initial), np.max(self.t_final)]
         
     def rescale_pos_data(self, array):
         rescaled = ((array - self.mean_pos)/ self.sigma_pos)
@@ -35,7 +36,3 @@ class ParticleData:
     def rescale_time_data(self, array):
         rescaled =  array/ self.max_time
         return rescaled
-
-
-
-
