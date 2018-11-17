@@ -13,7 +13,7 @@ def sampling_points(initial, final, pred, list_, sigma):
 def optimize_theta(self, true_vel_ch):
     for i in range(50):
         self.sess.run(self.optimizer_phy)
-        self.sess.run(self.optimizer_vel, feed_dict={self.vel_sample: true_vel_ch})
+        self.sess.run(self.optimizer_vel, feed_dict={self.VelocityModel.vel_sample: true_vel_ch})
 
 def sampling_theta(self, optimizer_vel, initial, final_index, t_initial, t_final):
     true_vel_ch = (final_index-initial)/(t_final-t_initial)
@@ -21,6 +21,4 @@ def sampling_theta(self, optimizer_vel, initial, final_index, t_initial, t_final
 
 def sampling_sigma(self, optimizer_sigma, pred, final_index):
     for i in range(50):
-        self.sess.run(optimizer_sigma, feed_dict={self.likelihood: np.sum((pred-final_index)**2)})
-            
-
+        self.sess.run(optimizer_sigma, feed_dict={self.VelocityModel.likelihood : np.sum((pred-final_index)**2)})
