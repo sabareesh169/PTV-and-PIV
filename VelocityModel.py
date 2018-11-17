@@ -8,19 +8,41 @@ class VelocityModel:
 
     def __init__(self, ParticleData, vel_layers, rho, mu, collacation_points=1000):
         
+        ##   Initializing the NN to predict the velocity
+        
         self.vel_weights, self.vel_biases = initialize_NN(vel_layers)
+        
+        ##   Fluid properties required for calculating the residuals of the governing equations
+        
         self.rho = rho
         self.mu = mu
         self.collacation_points=collacation_points
-        self.ParticleData=ParticleData
         
-        self.vel_NN = neural_net(ParticleData.t_initial_norm, ParticleData.initial_pos_norm[:,0][:,None], ParticleData.initial_pos_norm[:,1][:,None], self.vel_weights, self.vel_biases)[:,:2]
-        self.pos_NN = ParticleData.initial_pos + self.vel_NN*self.ParticleData.sigma_pos*(ParticleData.t_initial- ParticleData.t_final)/self.ParticleData.max_time
+        ##  Setting up graph for prediction of velocity and position of the particle
+        
+        self.ParticleData=ParticleData
+        self.vel_NN = neural_net(ParticleData.t_initial_norm, ParticleData.initial_pos_norm[:,0][:,None], \
+                                 ParticleData.initial_pos_norm[:,1][:,None], self.vel_weights, self.vel_biases)[:,:2]
+        self.pos_NN = ParticleData.initial_pos + self.vel_NN*self.ParticleData.sigma_pos*\
+                      (ParticleData.t_initial- ParticleData.t_final)/self.ParticleData.max_time
+        
+        ##  Setting up loss function for the velocity of the particles. The placeholder 'vel_sample' takes 
+        ##    in the new estimate of true velocity calculated based on the matched index at each iteration.
         
         self.vel_sample = tf.placeholder(tf.float32, shape=(ParticleData.initial_pos.shape[0], 2))
         self.loss_vel = tf.reduce_sum(tf.square(self.vel_NN - self.vel_sample))
+        
+        ##  Setting up loss function for the residuals of the governing equations. At present, we are considering 
+        ##    residuals of continuity and the N-S equations in both the dimensions
+        
         self.loss_NS_x, self.loss_NS_y, self.loss_cont = self.residue(self.vel_weights, self.vel_biases)
         self.total_residue = self.loss_NS_x + self.loss_NS_y + self.loss_cont
+        
+        ##  Setting up loss function for the sigma used in sampling of points. The placeholder 'likelihhod' takes 
+        ##    in the new estimate of likelihhod based on the matched index and velocity prediction at each iteration.
+        ##  We assume a Normal distribution for likelihood and an inverse-gamma prior for sigma resulting in an 
+        ##    inverse gamma posterior distibution. Taking negative log of this pdf will be in the form of 'neg_log_prob'.
+        
         alpha = tf.constant(0.001, dtype=tf.float32)
         beta = tf.constant(1., dtype=tf.float32)
         self.sigma = tf.Variable(1., dtype=tf.float32)
