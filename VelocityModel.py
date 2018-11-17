@@ -1,8 +1,10 @@
 class VelocityModel:
     """
-    Takes in the position of the particles at two different time instants.
-    Matches the positions of the corresponsing particles.
-    Then predicts velocity and 
+    Constructs a neural network for the prediction of velocity.
+    Calculates the residuals for the governing equations at random collacation points.
+    Assign a probability function for the matched particles.
+    Assign a probability function for the value of sigma.
+
     """
 
     def __init__(self, ParticleData, vel_layers, rho, mu, collacation_points=1000):
@@ -28,8 +30,8 @@ class VelocityModel:
         
     def residue(self, vel_weights, vel_biases):
         """
-        :param size: parameters of the network, the bounds on space and time for the data.
-        :returns: Residue of the governing equations.
+        :param size: parameters of the network.
+        :returns: Residue of the governing equations for the given network.
         """
         X_c = lhs(2, samples=self.collacation_points, criterion='m').astype(np.float32)
         X_c = (np.asarray((-1.5)+X_c*3))            
@@ -71,6 +73,11 @@ class VelocityModel:
         return ns_x/self.collacation_points, ns_y/self.collacation_points, cont/self.collacation_points
 
     def vel_predict(self, t, x, y):
+        """
+        
+        :param : time and position 
+        :returns: predicted velocity of the fluid at that position and time
+        """
         scaled_pos = self.ParticleData.rescale_test(np.concatenate((x,y)))
         scaled_t = t/self.ParticleData.t_scale
         scaled_vel=neural_net(t,x,y,self.vel_weights, self.vel_biases)[:,:2]
@@ -78,6 +85,11 @@ class VelocityModel:
         return self.sess.run(vel)
     
     def pos_predict(self, t1, t2, x, y):
+        """
+        
+        :param : the initia time and position of the particle
+        :returns: the predicted final position of the particle
+        """
         vel = self.vel_predict(t1, x, y)
         pos = vel*(t2-t1)
         return pos
