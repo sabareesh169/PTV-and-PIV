@@ -68,48 +68,4 @@ def neural_net(t, x, y, weights, biases):
             H = tf.tanh(H)
     return H
 
-## Residual of NS and contiuity equations
-def residue(vel_weights, vel_biases, t_min, t_max):
-    """
-    :param size: parameters of the network, the bounds on space and time for the data.
-    :returns: Residue of the governing equations.
-    """
-    X_c = lhs(2, samples=6000, criterion='m').astype(np.float32)
-    X_c = (np.asarray((-1.5)+X_c*3))            
-    x_f = X_c[:,0][:,None]
-    y_f = X_c[:,1][:,None]
-    t_c = lhs(1, samples=60, criterion='m')
-    t_c = np.asarray((t_min)+t_c*(t_max-t_min))            
-    vel = neural_net(t_c, x_f, y_f, vel_weights, vel_biases)
-
-    u_x = tf.gradients(vel[:,0], x_f)
-    u_y = tf.gradients(vel[:,0], y_f)
-    u_t = tf.gradients(vel[:,0], t_f)
-
-    v_x = tf.gradients(vel[:,1], x_f)
-    v_y = tf.gradients(vel[:,1], y_f)
-    v_t = tf.gradients(vel[:,1], t_f)
-
-    p_x = tf.gradients(vel[:,2], x_f)
-    p_y = tf.gradients(vel[:,2], y_f)
-
-    u_xx = tf.gradients(u_x, x_f)
-    u_yy = tf.gradients(u_y, y_f)
-
-    v_xx = tf.gradients(v_x, x_f)
-    v_yy = tf.gradients(v_y, y_f)
-
-    ns_x = tf.reduce_sum(tf.square(tf.reshape(u_t,shape=[-1,1]) + \
-        tf.reshape(vel[:,0], shape=[-1,1])*u_x + tf.reshape(vel[:,1], shape=[-1,1])*u_y + \
-        [x/(1000.) for x in p_x] - \
-        [x*1.25*10**(-6)/(c_v*c_l) for x in u_xx] - [x*1.25*10**(-6)/(c_v*c_l) for x in u_yy]))
-
-    ns_y = tf.reduce_sum(tf.square(tf.reshape(v_t,shape=[-1,1]) + \
-        tf.reshape(vel[:,0], shape=[-1,1])*v_x + tf.reshape(vel[:,1], shape=[-1,1])*v_y + \
-        [x/(1000.) for x in p_y] - \
-        [x*1.25*10**(-6) for x in v_xx] - [x*1.25*10**(-6) for x in v_yy]))
-
-    cont = tf.reduce_sum(tf.square(u_x+v_y))
-
-    return ns_x/6000., ns_y/6000., cont/6000.
 
