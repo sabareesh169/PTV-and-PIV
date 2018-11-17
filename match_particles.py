@@ -52,7 +52,7 @@ def xavier_initialisation(size):
 def neural_net(t, x, y, weights, biases):
     """
     Forward propogation of the Neural Network
-    :param size: Time and position of the particle and the parameters of the network
+    :param : Time and position of the particle and the parameters of the network
     :returns: Velocity and pressure
     """
     X = tf.concat([t,x,y],1)
