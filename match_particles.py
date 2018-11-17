@@ -42,7 +42,7 @@ def xavier_initialisation(size):
     """
     in_dim = size[0]
     out_dim = size[1]        
-    xavier_stddev = np.sqrt(200/(in_dim + out_dim))
+    xavier_stddev = np.sqrt(2./(in_dim + out_dim))
     return tf.Variable(tf.truncated_normal([in_dim, out_dim], stddev=xavier_stddev), dtype=tf.float32)
 
 def neural_net(t, x, y, weights, biases):
