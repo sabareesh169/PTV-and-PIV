@@ -16,13 +16,13 @@ class ParticleData:
         self.sess = tf.Session()
         self.initial_pos = initial_pos.astype(np.float32)
         self.final_pos = final_pos.astype(np.float32)
-        self.t_initial = t_initial.astype(np.float32)
-        self.t_final = t_final.astype(np.float32)
+        self.t_initial = np.ones((initial_pos.shape[0],1))*t_initial
+        self.t_final = np.ones((final_pos.shape[0],1))*t_final
 
         self.mean_pos = np.mean(initial_pos)
         self.sigma_pos = np.std(initial_pos)
 
-        self.max_time = np.max(t_final)
+        self.max_time = t_final
         self.t_initial_norm = self.rescale_time_data(t_initial)
         self.t_final_norm = self.rescale_time_data(t_final)
 
