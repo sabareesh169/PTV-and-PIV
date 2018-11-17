@@ -18,9 +18,11 @@ class ParticleData:
         self.t_initial = np.float32(t_initial)
         self.t_final = np.float32(t_final)
         
+        ## storing the statistics of the training data
         self.mean_pos = np.mean(initial_pos,axis=0)
         self.sigma_pos = np.std(initial_pos,axis=0)
 
+        ## Normalizing the training data
         self.max_time = self.t_final
         self.t_initial_norm = self.rescale_time_data(t_initial, self.initial_pos)
         self.t_final_norm = self.rescale_time_data(t_final, self.initial_pos)
@@ -28,8 +30,10 @@ class ParticleData:
         self.initial_pos_norm = self.rescale_pos_data(initial_pos)
         self.final_pos_norm = self.rescale_pos_data(final_pos)
 
+        ## Restricting the possible matches for each particle in the initial frame.
         tree=spatial.KDTree(initial_pos)
         self.cluster=tree.query_ball_point(initial_pos, radius)
+        
         self.time_bound=[np.min(self.t_initial), np.max(self.t_final)]
         
     def rescale_pos_data(self, array):
@@ -43,8 +47,9 @@ class ParticleData:
     
     def rescale_time_data(self, time, position):
         """
-        :param array: any temporal data to be scaled appropriately w.r.t to the final time
+        :param array: any temporal data is converted into appropriate dimensions and scaled appropriately
+                      w.r.t to the final time
         :returns: normalized data
         """
-        normalized_data =  (np.ones((position.shape[0],1))*time/ self.max_time).astype(np.float32)
-        return normalized_data
+        normalized_time =  (np.ones((position.shape[0],1))*time/ self.max_time).astype(np.float32)
+        return normalized_time
