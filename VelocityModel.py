@@ -14,7 +14,7 @@ class VelocityModel:
         self.ParticleData=ParticleData
         
         self.vel_NN = neural_net(ParticleData.t_initial_norm, ParticleData.initial_pos[:,0][:,None], ParticleData.initial_pos[:,1][:,None], self.vel_weights, self.vel_biases)
-        self.pos_NN = self.vel_NN*self.ParticleData.sigma_pos*(ParticleData.t_initial- ParticleData.t_final)/self.ParticleData.max_time
+        self.pos_NN = self.vel_NN[:,:2]*self.ParticleData.sigma_pos*(ParticleData.t_initial- ParticleData.t_final)/self.ParticleData.max_time
         
         self.vel_sample = tf.placeholder(tf.float32, shape=(ParticleData.initial_pos.shape[0], 2))
         self.loss_vel = tf.reduce_sum(tf.square(self.vel_NN[:,:2] - self.vel_sample))
