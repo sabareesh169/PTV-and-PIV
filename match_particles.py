@@ -1,9 +1,7 @@
 """
 This scripts does both PTV and PIV given the locations of points. It gives out a continuous function for velocity and pressure. 
-
 Author:
     Ilias Bilionis, Sabareesh Mamidipaka
-
 Date:
     11/15/2018
 """
@@ -18,12 +16,11 @@ import tensorflow as tf
 from sklearn.metrics import mean_squared_error
 import pandas as pd
 import scipy.io
-
+from scipy import spatial
 
 def initialize_NN(layers):
     """
     Structure and initilization of the NN.
-
     :param layers: A list of neurons in each layer(including the input and output layers)
     :returns: The intialized weights and biases of the required choice of the hidden layers
     """
@@ -40,7 +37,6 @@ def initialize_NN(layers):
 def xavier_initialisation(size):
     """
     Initializes the NN.
-
     :param size: The dimensions
     :returns: The intialized weights or biases for one specific hidden layer
     """
@@ -67,5 +63,3 @@ def neural_net(t, x, y, weights, biases):
         else:
             H = tf.tanh(H)
     return H
-
-
