@@ -1,8 +1,8 @@
 class TrainingProcess:
+    
     """
-    Takes in the position of the particles at two different time instants.
-    Matches the positions of the corresponsing particles.
-    Then predicts velocity and 
+    Takes in the loss functions constructed in the Velocity Model.
+    Runs an optimizer to minimize the loss function
     """
     
     def __init__(self, ParticleData, VelocityModel):
@@ -17,11 +17,23 @@ class TrainingProcess:
         init = tf.global_variables_initializer()
         self.sess.run(init)
         
-    def all_unknown(self, n_iter):
-        for i in range(n_iter):
-            print(i)
+    def match_particles_and_velocity(self, n_iter):
+        """
+        :param size: Sampling the points, theta and sigma one after the other for n_iter number of times.
+        :returns: optimized weights of the velocity DNN and the matched particles.
+        """
+         for i in range(n_iter):
             index=sampling_points(self.ParticleData.initial_pos, self.ParticleData.final_pos, self.sess.run(self.VelocityModel.pos_NN), self.ParticleData.cluster, self.sess.run(self.VelocityModel.sigma))
             final_index=self.ParticleData.rescale_pos_data(self.ParticleData.final_pos[index])
             sampling_theta(self, self.optimizer_vel, self.ParticleData.initial_pos, final_index, self.ParticleData.t_initial, self.ParticleData.t_final)
             sampling_sigma(self, self.optimizer_sigma, self.sess.run(self.VelocityModel.pos_NN), final_index)
         self.index=index  
+
+    def predict_velocity(self, n_iter):
+        """
+        :param size: Sampling the theta and sigma one after the other for n_iter number of times.
+        :returns: optimized weights of the velocity DNN.
+        """
+         for i in range(n_iter):
+            sampling_theta(self, self.optimizer_vel, self.ParticleData.initial_pos, self.ParticleData.final_pos, self.ParticleData.t_initial, self.ParticleData.t_final)
+            sampling_sigma(self, self.optimizer_sigma, self.sess.run(self.VelocityModel.pos_NN), self.ParticleData.final_pos)
