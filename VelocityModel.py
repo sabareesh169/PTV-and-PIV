@@ -82,7 +82,7 @@ class VelocityModel:
         scaled_t = t/self.ParticleData.t_scale
         scaled_vel=neural_net(t,x,y,self.vel_weights, self.vel_biases)[:,:2]
         vel= scaled_vel*self.ParticleData.sigma_pos/self.ParticleData.max_time
-        return self.sess.run(vel)
+        return vel
     
     def pos_predict(self, t1, t2, x, y):
         """
