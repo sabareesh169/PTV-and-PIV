@@ -7,8 +7,12 @@ The position data is then used to form multiple clusters to limit the possible m
 """
 
 class ParticleData:
-
+    
     def __init__(self, initial_pos, final_pos, t_initial, t_final, radius):
+        """
+        
+        :param : The initial and final positions of particles, the initial and final time instants, and the radius of cluster
+        """        
         self.sess = tf.Session()
         self.initial_pos = initial_pos.astype(np.float32)
         self.final_pos = final_pos.astype(np.float32)
@@ -30,9 +34,18 @@ class ParticleData:
         self.time_bound=[np.min(self.t_initial), np.max(self.t_final)]
         
     def rescale_pos_data(self, array):
+        """
+        
+        :param array: any spatial data to be normalized w.r.t the mean and variance of the initial position
+        :returns: normalized data
+        """
         rescaled = ((array - self.mean_pos)/ self.sigma_pos)
         return rescaled
     
     def rescale_time_data(self, array):
+        """
+        :param array: any temporal data to be scaled appropriately w.r.t to the final time
+        :returns: normalized data
+        """
         rescaled =  array/ self.max_time
         return rescaled
