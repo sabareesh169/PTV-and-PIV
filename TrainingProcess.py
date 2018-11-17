@@ -50,4 +50,4 @@ class TrainingProcess:
         :param : the time and position of the point and the time at whoch the position is required.
         :returns: predicted position of the particle.
         """
-        return self.sess.run(self.VelocityModel.pos_predict(t1, t2, x, y))                   
+        return self.sess.run(self.VelocityModel.pos_predict(t1, t2, x, y))  
