@@ -112,5 +112,5 @@ class VelocityModel:
         :returns: the predicted final position of the particle
         """
         vel = self.vel_predict(t1, x, y)
-        pos = vel*(t2-t1)
+        pos = np.concatenate((x,y),axis=1) + vel*(t2-t1)
         return pos
