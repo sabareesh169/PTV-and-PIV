@@ -34,7 +34,7 @@ class TrainingProcess:
             final_index=self.ParticleData.rescale_pos_data(self.ParticleData.final_pos[index])
             sampling_theta(self, self.optimizer_vel, self.ParticleData.initial_pos, final_index, self.ParticleData.t_initial, self.ParticleData.t_final)
             sampling_sigma(self, self.optimizer_sigma, self.sess.run(self.VelocityModel.pos_NN), final_index)
-        self.index=index  
+        return index  
 
     def train_velocity(self, n_iter):
         """
