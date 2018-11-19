@@ -14,17 +14,13 @@ def optimize_theta(self, true_vel_ch):
     for i in range(50):
         self.sess.run(self.optimizer_phy)
         self.sess.run(self.optimizer_vel, feed_dict={self.VelocityModel.vel_sample: true_vel_ch})
+    print(self.sess.run(self.VelocityModel.loss_vel, feed_dict={self.VelocityModel.vel_sample: true_vel_ch}))
+
 
 def sampling_theta(self, optimizer_vel, initial, final_index, t_initial, t_final):
-    initial_norm = self.ParticleData.rescale_pos_data(initial)
-    final_index_norm = self.ParticleData.rescale_pos_data(final_index)
-    t_final_norm = self.ParticleData.rescale_time_data(t_final, final_index_norm)
-    t_initial_norm = self.ParticleData.rescale_time_data(t_initial, initial_norm)
-
-    true_vel_ch = (final_index_norm-initial_norm)/(t_final_norm-t_initial)
+    true_vel_ch = (final_index-initial)/(t_final-t_initial)
     optimize_theta(self, true_vel_ch)
 
 def sampling_sigma(self, optimizer_sigma, pred, final_index):
     for i in range(50):
         self.sess.run(optimizer_sigma, feed_dict={self.VelocityModel.likelihood : np.sum((pred-final_index)**2)})
-         
