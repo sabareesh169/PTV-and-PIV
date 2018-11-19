@@ -3,15 +3,15 @@ Construction and setting up of loss functions of DNN to predict the correct velo
 Author:
     Sabareesh Mamidipaka, Ilias Bilionis
 Date:
-    7/25/2013
+    11/19/2018
 """
 
+
+__all__ = ['VelocityModel']
 
 import tensorflow as tf
 import numpy as np
 from pyDOE import lhs
-
-__all__ = ['VelocityModel']
 
 
 class VelocityModel:
