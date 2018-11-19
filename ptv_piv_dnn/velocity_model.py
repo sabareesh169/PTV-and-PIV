@@ -1,3 +1,19 @@
+"""
+Construction and setting up of loss functions of DNN to predict the correct velocity.
+Author:
+    Sabareesh Mamidipaka, Ilias Bilionis
+Date:
+    7/25/2013
+"""
+
+
+import tensorflow as tf
+import numpy as np
+from pyDOE import lhs
+
+__all__ = ['VelocityModel']
+
+
 class VelocityModel:
     """
     Constructs a neural network for the prediction of velocity.
@@ -29,6 +45,8 @@ class VelocityModel:
         
     def residue(self, vel_weights, vel_biases):
         """
+        This is to calculate the reiduals of the governing equations at random collacation points 
+        
         :param size: parameters of the network.
         :returns: Residue of the governing equations for the given network.
         """
@@ -73,6 +91,7 @@ class VelocityModel:
 
     def vel_predict(self, t, x, y):
         """
+        This is to predict the velocity at given position and time
         
         :param : time and position 
         :returns: predicted velocity of the fluid at that position and time
@@ -85,6 +104,7 @@ class VelocityModel:
     
     def pos_predict(self, t1, t2, x, y):
         """
+        This is to predict the particle position at final time given the initial position and time of particle.
         
         :param : the initia time and position of the particle
         :returns: the predicted final position of the particle
