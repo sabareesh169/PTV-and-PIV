@@ -1,23 +1,15 @@
 """
-This scripts does both PTV and PIV given the locations of points. It gives out a continuous function for velocity and pressure. 
+Construction initialization and forward propogation of the NN.
+
 Author:
-    Ilias Bilionis, Sabareesh Mamidipaka
+    Sabareesh Mamidipaka, Ilias Bilionis
 Date:
-    11/15/2018
+    11/19/2018
 """
 
 
-from pyDOE import lhs
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt
-import numpy as np
-import scipy as sc
 import tensorflow as tf
-from sklearn.metrics import mean_squared_error
-import pandas as pd
-import scipy.io
-from scipy import spatial
+
 
 def initialize_NN(layers):
     """
