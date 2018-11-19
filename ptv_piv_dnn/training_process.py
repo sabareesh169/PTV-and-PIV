@@ -1,6 +1,23 @@
-class TrainingProcess:
+"""
+Optimization of DNN to predict the correct velocity.
+
+Author:
+    Sabareesh Mamidipaka, Ilias Bilionis
     
+Date:
+    11/19/2018
+"""
+
+__all__ = ['TraningProcess']
+
+
+import tensorflow as tf
+import numpy as np
+
+
+class TrainingProcess:
     """
+    
     Takes in the loss functions constructed in the Velocity Model.
     Runs an optimizer to minimize the loss function
     """
@@ -19,6 +36,9 @@ class TrainingProcess:
         
     def match_particles_and_velocity(self, n_iter):
         """
+        This is to optimze in the case when the matching points are not known.
+        We sample points, optmize theta, and sigma alternatively one after the other.
+        
         :param size: Sampling the points, theta and sigma one after the other for n_iter number of times.
         :returns: optimized weights of the velocity DNN and the matched particles.
         """
@@ -31,6 +51,9 @@ class TrainingProcess:
 
     def train_velocity(self, n_iter):
         """
+        This is to optimze in the case when the matching points are known.
+        We optmize theta, and sigma alternatively one after the other.
+        
         :param size: Sampling the theta and sigma one after the other for n_iter number of times.
         :returns: optimized weights of the velocity DNN.
         """
@@ -40,6 +63,8 @@ class TrainingProcess:
             
     def vel_predict(self, t, x, y):
         """
+        This is to predict the velocity at given time and position.
+        
         :param : the time and position of the point.
         :returns: velocity at the particular position and time.
         """
@@ -47,6 +72,8 @@ class TrainingProcess:
 
     def pos_predict(self, t1, t2, x, y):
         """
+        This is to predict the particle position at final time given the initial position and time of particle.
+
         :param : the time and position of the point and the time at whoch the position is required.
         :returns: predicted position of the particle.
         """
