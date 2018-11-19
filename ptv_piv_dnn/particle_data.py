@@ -1,8 +1,8 @@
 """
+Taking and normalizing the given particle data.
+
 Author:
-    ...
-    ...
-    
+    Sabareesh Mamidipaka, Ilias Bilionis
 Date:
     11/19/2018
 """
@@ -18,12 +18,14 @@ from scipy import spatial
 
 class ParticleData(object):
     """
+    
     This class takes in the particle data and scales the data for better 
     functioning of the DNN's.
     The postional data is normalised w.r.t the initial position of the particles. 
     The time data is 'normalized' differently to avoid (potentially) division with zero.
     The position data is then used to form multiple clusters to limit the possible 
     matches for each initial point.
+    
     """
     
     def __init__(self, initial_pos, final_pos, t_initial, t_final, radius):
@@ -52,9 +54,9 @@ class ParticleData(object):
         self.cluster = tree.query_ball_point(initial_pos, radius)
         self.time_bound = [np.min(self.t_initial), np.max(self.t_final)]
         
-    def rescale_pos_data(self, array):
+    def scale_pos_data(self, array):
         """
-        Rescale position data.
+        Scale position data.
         
         :param array: any spatial data to be normalized w.r.t the mean and variance of the initial position
         :returns: normalized data
@@ -62,9 +64,9 @@ class ParticleData(object):
         normalized_data = ((array - self.mean_pos) / self.sigma_pos).astype(np.float32)
         return normalized_data
     
-    def rescale_time_data(self, time, position):
+    def scale_time_data(self, time, position):
         """
-        Rescale time data.
+        Scale time data.
         
         :param array: any temporal data to be scaled appropriately w.r.t to the final time
         :returns: normalized data
