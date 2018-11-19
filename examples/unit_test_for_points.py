@@ -33,7 +33,7 @@ test_velocity_model = VelocityModel(data, vel_layers, rho, mu)
 test_training = TrainingProcess(data, test_velocity_model)
 
 ## Training for 500 iterations
-index = test_training.match_points(true_vel, n_iter=5)
+index = test_training.match_points(true_vel, n_iter=500)
 pred = test_training.pos_predict(t_initial, t_final, initial[:,0][:,None], initial[:,1][:,None])
 
 ## Check the accuracy of predictions
