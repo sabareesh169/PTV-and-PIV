@@ -51,14 +51,8 @@ plt.savefig('train_prediction.png')
 f, ax1 = plt.subplots(1, 1, figsize=(40,35))
 ax1.set_xlim(0.25,0.6)
 ax1.set_ylim(0,0.4)
-for i in range(test_initial.shape[0]):
-    ax1.arrow(test_initial[i,0], test_initial[i,1],(test_pred[i,0]-test_initial[i,0]), (test_pred[i,1]-test_initial[i,1]), width=0.0005, head_width=0.002)
-    ax1.scatter(test_data[:,[0,2]][i,:], test_data[:,[1,3]][i,:])
-plt.savefig('test_prediction.png')
+for i in range(initial.shape[0]):
+    ax1.arrow(initial[i,0], initial[i,1],(final[index][i,0]-initial[i,0]), (final[index][i,1]-initial[i,1]), width=0.0005, head_width=0.002)
+    ax1.scatter(train_data[:,[0,2]][i,:], train_data[:,[1,3]][i,:])
+plt.savefig('train_matching.png')
 
-f, ax1 = plt.subplots(1, 1, figsize=(40,35))
-ax1.set_xlim(0.25,0.6)
-ax1.set_ylim(0,0.4)
-for i in range(test_initial.shape[0]):
-    ax1.arrow(test_initial[i,0], test_initial[i,1],(test_final[i,0]-test_initial[i,0]), (test_final[i,1]-test_initial[i,1]), width=0.0005, head_width=0.002)
-plt.savefig('test_true.png')
