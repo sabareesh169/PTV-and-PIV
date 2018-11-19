@@ -63,7 +63,7 @@ class TrainingProcess:
             sampling_theta(self, self.optimizer_vel, self.ParticleData.initial_pos_norm, self.ParticleData.final_pos_norm, self.ParticleData.t_initial_norm, self.ParticleData.t_final_norm)
             sampling_sigma(self, self.optimizer_sigma, self.sess.run(self.VelocityModel.pos_NN), self.ParticleData.final_pos)
 
-    def match_points(self, true_vel):
+    def match_points(self, true_vel, n_iter):
         """
         This is to match the index the case when the true velocity is known.
         We optmize theta, and sigma alternatively one after the other.
@@ -75,7 +75,7 @@ class TrainingProcess:
         true_vel_ch = true_vel * self.ParticleData.max_time/self.ParticleData.sigma_pos
         for i in range(n_iter):
             optimize_theta(self, true_vel_ch)
-        return sampling_points(self.ParticleData.initial_pos, self.ParticleData.final_pos, self.ParticleData.cluster, self.ParticleData.radius)        
+        return sampling_points(self.ParticleData.initial_pos, self.ParticleData.final_pos, self.sess.run(self.VelocityModel.pos_NN), self.ParticleData.cluster, self.ParticleData.radius)        
 
     def vel_predict(self, t, x, y):
         """
@@ -90,7 +90,6 @@ class TrainingProcess:
     def pos_predict(self, t1, t2, x, y):
         """
         This is to predict the particle position at final time given the initial position and time of particle.
-
         :param : the time and position of the point and the time at whoch the position is required.
         :returns: predicted position of the particle.
         """
