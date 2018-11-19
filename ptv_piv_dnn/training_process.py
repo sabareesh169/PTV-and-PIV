@@ -44,7 +44,7 @@ class TrainingProcess:
         """
         for i in range(n_iter):
             index=sampling_points(self.ParticleData.initial_pos, self.ParticleData.final_pos, self.sess.run(self.VelocityModel.pos_NN), self.ParticleData.cluster, self.sess.run(self.VelocityModel.sigma))
-            final_index=self.ParticleData.rescale_pos_data(self.ParticleData.final_pos[index])
+            final_index=self.ParticleData.scale_pos_data(self.ParticleData.final_pos[index])
             sampling_theta(self, self.optimizer_vel, self.ParticleData.initial_pos_norm, final_index, self.ParticleData.t_initial_norm, self.ParticleData.t_final_norm)
             sampling_sigma(self, self.optimizer_sigma, self.sess.run(self.VelocityModel.pos_NN), final_index)
         return index  
