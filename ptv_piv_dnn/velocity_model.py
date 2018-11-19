@@ -31,7 +31,7 @@ class VelocityModel:
         self.ParticleData=ParticleData
         
         self.vel_NN = neural_net(ParticleData.t_initial_norm, ParticleData.initial_pos_norm[:,0][:,None], ParticleData.initial_pos_norm[:,1][:,None], self.vel_weights, self.vel_biases)[:,:2]
-        self.pos_NN = ParticleData.initial_pos + self.vel_NN*self.ParticleData.sigma_pos*(ParticleData.t_initial- ParticleData.t_final)/self.ParticleData.max_time
+        self.pos_NN = ParticleData.initial_pos + self.vel_NN * self.ParticleData.sigma_pos * (ParticleData.t_final - ParticleData.t_initial) / self.ParticleData.max_time
 
         self.vel_sample = tf.placeholder(tf.float32, shape=(ParticleData.initial_pos.shape[0], 2))
         self.loss_vel = tf.reduce_sum(tf.square(self.vel_NN - self.vel_sample))
@@ -41,7 +41,7 @@ class VelocityModel:
         beta = tf.constant(1., dtype=tf.float32)
         self.sigma = tf.Variable(1., dtype=tf.float32)
         self.likelihood = tf.placeholder(dtype=tf.float32)
-        self.neg_log_prob = (2*alpha+102)*tf.log(self.sigma)+(beta+self.likelihood/2)/self.sigma**2
+        self.neg_log_prob = (2 * alpha + 102) * tf.log(self.sigma) + (beta + self.likelihood / 2) / self.sigma**2
         
     def residue(self, vel_weights, vel_biases):
         """
@@ -49,11 +49,11 @@ class VelocityModel:
         :returns: Residue of the governing equations for the given network.
         """
         X_c = lhs(2, samples=self.collacation_points, criterion='m').astype(np.float32)
-        X_c = (np.asarray((-1.5)+X_c*3))            
+        X_c = (np.asarray((-1.5) + X_c * 3))            
         x_f = tf.reshape(X_c[:,0], shape=[-1,1])
         y_f = tf.reshape(X_c[:,1], shape=[-1,1])
-        t_c = lhs(1, samples=self.collacation_points, criterion='m').astype(np.float32)
-        t_c = tf.reshape(np.asarray(np.min(self.ParticleData.time_bound[0])+t_c*(self.ParticleData.time_bound[1]-self.ParticleData.time_bound[0])), shape=[-1,1])            
+        t_c = lhs(1, samples= self.collacation_points, criterion= 'm').astype(np.float32)
+        t_c = tf.reshape(np.asarray(np.min(self.ParticleData.time_bound[0]) + t_c * (self.ParticleData.time_bound[1]-self.ParticleData.time_bound[0])), shape=[-1,1])            
         vel = neural_net(t_c, x_f, y_f, vel_weights, vel_biases)
 
         u_x = tf.gradients(vel[:,0], x_f)
@@ -83,9 +83,9 @@ class VelocityModel:
             [x/(self.rho) for x in p_y] - \
             [x/(self.rho*self.mu) for x in v_xx] - [x/(self.rho*self.mu) for x in v_yy]))
 
-        cont = tf.reduce_sum(tf.square(u_x+v_y))
+        cont = tf.reduce_sum(tf.square(u_x + v_y))
 
-        return ns_x/self.collacation_points, ns_y/self.collacation_points, cont/self.collacation_points
+        return ns_x / self.collacation_points, ns_y / self.collacation_points, cont / self.collacation_points
 
     def vel_predict(self, t, x, y):
         """
@@ -95,8 +95,8 @@ class VelocityModel:
         """
         scaled_pos = self.ParticleData.scale_pos_data(np.concatenate((x,y),axis=1))
         scaled_t = self.ParticleData.scale_time_data(t,x)
-        scaled_vel=neural_net(scaled_t, scaled_pos[:,0][:,None], scaled_pos[:,1][:,None], self.vel_weights, self.vel_biases)[:,:2]
-        vel= scaled_vel*self.ParticleData.sigma_pos/self.ParticleData.max_time
+        scaled_vel = neural_net(scaled_t, scaled_pos[:,0][:,None], scaled_pos[:,1][:,None], self.vel_weights, self.vel_biases)[:,:2]
+        vel = scaled_vel * self.ParticleData.sigma_pos / self.ParticleData.max_time
         return vel
     
     def pos_predict(self, t1, t2, x, y):
