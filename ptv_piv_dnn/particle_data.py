@@ -42,6 +42,7 @@ class ParticleData(object):
         
         self.mean_pos = np.mean(initial_pos,axis=0)
         self.sigma_pos = np.std(initial_pos,axis=0)
+        self.radius = radius
 
         self.max_time = self.t_final
         self.t_initial_norm = self.rescale_time_data(t_initial, self.initial_pos)
