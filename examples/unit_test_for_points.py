@@ -10,7 +10,7 @@ We can then use this DNN to predict the matched positions of these points.
 
 ## Loading training and testing data
 train_data=pd.read_csv("foc_train_data.csv")
-test_data=pd.read_csv("foc_test_data.csv")
+test_data=pd.read_csv("foc_val_data.csv")
 train_data = train_data
 train_data = train_data.values
 test_data = test_data.values
@@ -33,7 +33,7 @@ test_velocity_model = VelocityModel(data, vel_layers, rho, mu)
 test_training = TrainingProcess(data, test_velocity_model)
 
 ## Training for 500 iterations
-index = test_training.match_points(n_iter=500)
+index = test_training.match_points(true_vel, n_iter=5)
 pred = test_training.pos_predict(t_initial, t_final, initial[:,0][:,None], initial[:,1][:,None])
 
 ## Check the accuracy of predictions
