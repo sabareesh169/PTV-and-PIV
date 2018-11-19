@@ -45,8 +45,6 @@ class VelocityModel:
         
     def residue(self, vel_weights, vel_biases):
         """
-        This is to calculate the reiduals of the governing equations at random collacation points 
-        
         :param size: parameters of the network.
         :returns: Residue of the governing equations for the given network.
         """
@@ -91,7 +89,6 @@ class VelocityModel:
 
     def vel_predict(self, t, x, y):
         """
-        This is to predict the velocity at given position and time
         
         :param : time and position 
         :returns: predicted velocity of the fluid at that position and time
@@ -104,7 +101,6 @@ class VelocityModel:
     
     def pos_predict(self, t1, t2, x, y):
         """
-        This is to predict the particle position at final time given the initial position and time of particle.
         
         :param : the initia time and position of the particle
         :returns: the predicted final position of the particle
@@ -112,3 +108,9 @@ class VelocityModel:
         vel = self.vel_predict(t1, x, y)
         pos = np.concatenate((x,y),axis=1) + vel*(t2-t1)
         return pos
+
+if __name__ == '__main__':
+    # Initialize it with various conditions
+    # Do some test
+    # Print error messages for debugging
+    pass
