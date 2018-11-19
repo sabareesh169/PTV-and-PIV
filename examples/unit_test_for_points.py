@@ -36,8 +36,8 @@ test_training = TrainingProcess(data, test_velocity_model)
 index = test_training.match_points(true_vel, n_iter=500)
 pred = test_training.pos_predict(t_initial, t_final, initial[:,0][:,None], initial[:,1][:,None])
 
-## Check the accuracy of predictions
-matched_points = float(np.count_nonzero(np.arange(initial.shape[0]) - index)) / index.shape[0]
+## Check the accuracy of predictions. The correct index for the final point is the index of the initial point itself.
+matched_points = 1 - float(np.count_nonzero(np.arange(initial.shape[0]) - index)) / index.shape[0]
 print(matched_points)
 
 f, ax1 = plt.subplots(1, 1, figsize=(40,35))
