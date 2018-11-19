@@ -45,11 +45,11 @@ class ParticleData(object):
         self.radius = radius
 
         self.max_time = self.t_final
-        self.t_initial_norm = self.rescale_time_data(t_initial, self.initial_pos)
-        self.t_final_norm = self.rescale_time_data(t_final, self.initial_pos)
+        self.t_initial_norm = self.scale_time_data(t_initial, self.initial_pos)
+        self.t_final_norm = self.scale_time_data(t_final, self.initial_pos)
 
-        self.initial_pos_norm = self.rescale_pos_data(initial_pos)
-        self.final_pos_norm = self.rescale_pos_data(final_pos)
+        self.initial_pos_norm = self.scale_pos_data(initial_pos)
+        self.final_pos_norm = self.scale_pos_data(final_pos)
 
         tree = spatial.KDTree(initial_pos)
         self.cluster = tree.query_ball_point(initial_pos, radius)
