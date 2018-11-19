@@ -75,7 +75,7 @@ class TrainingProcess:
         true_vel_ch = true_vel * self.ParticleData.max_time/self.ParticleData.sigma_pos
         for i in range(n_iter):
             optimize_theta(self, true_vel_ch)
-            sampling_sigma(self, self.optimizer_sigma, self.sess.run(self.VelocityModel.pos_NN), self.ParticleData.final_pos)
+        return sampling_points(self.ParticleData.initial_pos, self.ParticleData.final_pos, self.ParticleData.cluster, self.ParticleData.radius)        
 
     def vel_predict(self, t, x, y):
         """
