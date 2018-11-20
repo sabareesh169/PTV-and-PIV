@@ -49,11 +49,14 @@ class VelocityModel:
         :returns: Residue of the governing equations for the given network.
         """
         X_c = lhs(2, samples=self.collacation_points, criterion='m').astype(np.float32)
-        X_c = (np.asarray((-1.5) + X_c * 3))            
+        X_c = np.concatenate((np.asarray((-1.5)+X_c*3), self.ParticleData.initial_pos_norm), axis=0)  
         x_f = tf.reshape(X_c[:,0], shape=[-1,1])
         y_f = tf.reshape(X_c[:,1], shape=[-1,1])
         t_c = lhs(1, samples= self.collacation_points, criterion= 'm').astype(np.float32)
-        t_c = tf.reshape(np.asarray(np.min(self.ParticleData.time_bound[0]) + t_c * (self.ParticleData.time_bound[1]-self.ParticleData.time_bound[0])), shape=[-1,1])            
+        t_c = tf.concat((tf.reshape(np.asarray(np.min(self.ParticleData.time_bound[0])+\
+            t_c*(self.ParticleData.time_bound[1]-self.ParticleData.time_bound[0])), \
+            shape=[-1,1]), tf.reshape(self.ParticleData.t_initial_norm,shape=[-1,1])), axis=0) 
+        
         vel = neural_net(t_c, x_f, y_f, vel_weights, vel_biases)
 
         u_x = tf.gradients(vel[:,0], x_f)
