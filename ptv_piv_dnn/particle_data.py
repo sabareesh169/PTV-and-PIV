@@ -44,16 +44,17 @@ class ParticleData(object):
         self.sigma_pos = np.std(initial_pos,axis=0)
         self.radius = radius
 
-        self.max_time = self.t_final
-        self.t_initial_norm = self.scale_time_data(t_initial, self.initial_pos)
-        self.t_final_norm = self.scale_time_data(t_final, self.initial_pos)
+        self.max_time = np.max(self.t_final)
+        self.min_time = np.min(self.t_initial)
+        self.t_initial_norm = self.scale_time_data(t_initial).astype(np.float32)
+        self.t_final_norm = self.scale_time_data(t_final).astype(np.float32)
 
-        self.initial_pos_norm = self.scale_pos_data(initial_pos)
-        self.final_pos_norm = self.scale_pos_data(final_pos)
+        self.initial_pos_norm = self.scale_pos_data(initial_pos).astype(np.float32)
+        self.final_pos_norm = self.scale_pos_data(final_pos).astype(np.float32)
 
         tree = spatial.KDTree(initial_pos)
         self.cluster = tree.query_ball_point(initial_pos, radius)
-        self.time_bound = [np.min(self.t_initial), np.max(self.t_final)]
+        self.time_bound = [np.min(self.t_initial_norm), np.max(self.t_final_norm)]
         
     def scale_pos_data(self, array):
         """
@@ -62,19 +63,18 @@ class ParticleData(object):
         :param array: any spatial data to be normalized w.r.t the mean and variance of the initial position
         :returns: normalized data
         """
-        normalized_data = ((array - self.mean_pos) / self.sigma_pos).astype(np.float32)
+        normalized_data = ((array - self.mean_pos) / self.sigma_pos)
         return normalized_data
     
-    def scale_time_data(self, time, position):
+    def scale_time_data(self, time):
         """
         Scale time data.
         
         :param array: any temporal data to be scaled appropriately w.r.t to the final time
         :returns: normalized data
         """
-        normalized_data =  (np.ones((position.shape[0],1)) * time / self.max_time).astype(np.float32)
+        normalized_data =   time / self.max_time
         return normalized_data
-
 
 if __name__ == '__main__':
     # Initialize it with various conditions
