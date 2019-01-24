@@ -22,7 +22,7 @@ class VelocityModel:
     Assign a probability function for the value of sigma.
     """
 
-    def __init__(self, ParticleData, vel_layers, rho, mu, collacation_points=1000):
+    def __init__(self, ParticleData, vel_layers, rho, mu, collacation_points=4000):
         
         self.vel_weights, self.vel_biases = initialize_NN(vel_layers)
         self.rho = rho
@@ -31,32 +31,32 @@ class VelocityModel:
         self.ParticleData=ParticleData
         
         self.vel_NN = neural_net(ParticleData.t_initial_norm, ParticleData.initial_pos_norm[:,0][:,None], ParticleData.initial_pos_norm[:,1][:,None], self.vel_weights, self.vel_biases)[:,:2]
-        self.pos_NN = ParticleData.initial_pos + self.vel_NN * self.ParticleData.sigma_pos * (ParticleData.t_final - ParticleData.t_initial) / self.ParticleData.max_time
+        self.pos_NN = ParticleData.initial_pos + self.vel_NN*self.ParticleData.sigma_pos*(ParticleData.t_final - ParticleData.t_initial)/self.ParticleData.max_time
+        self.reg = 0.0005 * tf.reduce_sum([ tf.nn.l2_loss(x) for x in self.vel_weights ])
 
         self.vel_sample = tf.placeholder(tf.float32, shape=(ParticleData.initial_pos.shape[0], 2))
         self.loss_vel = tf.reduce_sum(tf.square(self.vel_NN - self.vel_sample))
+
         self.loss_NS_x, self.loss_NS_y, self.loss_cont = self.residue(self.vel_weights, self.vel_biases)
-        self.total_residue = self.loss_NS_x + self.loss_NS_y + self.loss_cont
-        alpha = tf.constant(0.001, dtype=tf.float32)
-        beta = tf.constant(1., dtype=tf.float32)
-        self.sigma = tf.Variable(1., dtype=tf.float32)
+        self.total_residue = self.loss_NS_x + self.loss_NS_y + self.loss_cont #+ self.reg
+
+        self.dummy_var = tf.Variable(-4., dtype=tf.float32)
+        self.sigma = tf.exp(self.dummy_var)
         self.likelihood = tf.placeholder(dtype=tf.float32)
-        self.neg_log_prob = (2 * alpha + 102) * tf.log(self.sigma) + (beta + self.likelihood / 2) / self.sigma**2
+        self.neg_log_prob = (self.ParticleData.initial_pos.shape[0] + 1)*tf.log(self.sigma**2)+(self.likelihood/(2*self.sigma**2))
         
     def residue(self, vel_weights, vel_biases):
         """
         :param size: parameters of the network.
         :returns: Residue of the governing equations for the given network.
         """
-        X_c = lhs(2, samples=self.collacation_points, criterion='m').astype(np.float32)
-        X_c = np.concatenate((np.asarray((-1.5)+X_c*3), self.ParticleData.initial_pos_norm), axis=0)  
+        #X_c = lhs(2, samples=self.collacation_points, criterion='m').astype(np.float32)
+        dist_pos = tfd.Uniform(low=[-1.5, -1.5], high=[1.5, 1.5])
+        X_c = dist_pos.sample(100)        #X_c = np.concatenate((np.asarray((-1.5)+X_c*3), self.ParticleData.initial_pos_norm), axis=0)  
         x_f = tf.reshape(X_c[:,0], shape=[-1,1])
         y_f = tf.reshape(X_c[:,1], shape=[-1,1])
-        t_c = lhs(1, samples= self.collacation_points, criterion= 'm').astype(np.float32)
-        t_c = tf.concat((tf.reshape(np.asarray(np.min(self.ParticleData.time_bound[0])+\
-            t_c*(self.ParticleData.time_bound[1]-self.ParticleData.time_bound[0])), \
-            shape=[-1,1]), tf.reshape(self.ParticleData.t_initial_norm,shape=[-1,1])), axis=0) 
-        
+        dist_t = tfd.Uniform(low=self.ParticleData.time_bound[0], high=self.ParticleData.time_bound[1])
+        t_c = tf.reshape(dist_t.sample(100), shape=[-1,1])           
         vel = neural_net(t_c, x_f, y_f, vel_weights, vel_biases)
 
         u_x = tf.gradients(vel[:,0], x_f)
@@ -86,32 +86,32 @@ class VelocityModel:
             [x/(self.rho) for x in p_y] - \
             [x/(self.rho*self.mu) for x in v_xx] - [x/(self.rho*self.mu) for x in v_yy]))
 
-        cont = tf.reduce_sum(tf.square(u_x + v_y))
+        cont = tf.reduce_sum(tf.square(u_x+v_y))
 
-        return ns_x / self.collacation_points, ns_y / self.collacation_points, cont / self.collacation_points
+        return ns_x/self.collacation_points, ns_y/self.collacation_points, cont/self.collacation_points
 
-    def vel_predict(self, t, x, y):
+    def vel_predict(self, t, pos_data):
         """
-        
+         
         :param : time and position 
         :returns: predicted velocity of the fluid at that position and time
         """
-        scaled_pos = self.ParticleData.scale_pos_data(np.concatenate((x,y),axis=1))
-        scaled_t = self.ParticleData.scale_time_data(t,x)
-        scaled_vel = neural_net(scaled_t, scaled_pos[:,0][:,None], scaled_pos[:,1][:,None], self.vel_weights, self.vel_biases)[:,:2]
-        vel = scaled_vel * self.ParticleData.sigma_pos / self.ParticleData.max_time
+        scaled_pos = self.ParticleData.scale_pos_data(pos_data)
+        scaled_t = self.ParticleData.scale_time_data(t)
+        scaled_vel=neural_net(scaled_t, scaled_pos[:,0][:,None], scaled_pos[:,1][:,None], self.vel_weights, self.vel_biases)[:,:2]
+        vel= scaled_vel*self.ParticleData.sigma_pos/self.ParticleData.max_time
         return vel
     
-    def pos_predict(self, t1, t2, x, y):
+    def pos_predict(self, t1, t2, pos_data):
         """
         
         :param : the initia time and position of the particle
         :returns: the predicted final position of the particle
         """
-        vel = self.vel_predict(t1, x, y)
-        pos = np.concatenate((x,y),axis=1) + vel*(t2-t1)
+        vel = self.vel_predict(t1, pos_data)
+        pos = pos_data + vel*(t2-t1)
         return pos
-
+    
 if __name__ == '__main__':
     # Initialize it with various conditions
     # Do some test
