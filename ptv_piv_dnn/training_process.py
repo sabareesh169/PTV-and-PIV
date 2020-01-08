@@ -2,7 +2,7 @@
 Optimization of DNN to predict the correct velocity.
 
 Author:
-    Sabareesh Mamidipaka, Ilias Bilionis
+    Sabareesh Mamidipaka
     
 Date:
     11/19/2018
