@@ -1,6 +1,6 @@
 """PTV and PIV with DNN
 Author:
-    Sabareesh Mamidipaka, Ilias Bilionis
+    Sabareesh Mamidipaka
 Date:
     11/19/2018
 """
