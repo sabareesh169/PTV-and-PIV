@@ -2,7 +2,7 @@
 This is to run optimzation so as to sample points, theta and sigma alternatively (Gibb's sampling).
 
 Author:
-    Sabareesh Mamidipaka, Ilias Bilionis
+    Sabareesh Mamidipaka
 Date:
     11/19/2018
 """
