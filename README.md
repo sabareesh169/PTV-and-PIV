@@ -5,6 +5,8 @@ The purpose of this project is to find the fluid velocity from the images of a p
 
 ![General methodology followed for PIV](https://www.researchgate.net/profile/Daniel_Cote2/publication/50268148/figure/fig2/AS:305818365906946@1449924188734/The-underlying-concept-of-the-two-frames-cross-correlation-particle-image-velocimetry.png)
 
+General methodology followed for PIV
+
 As we can guess, the window size is very critical for the measurement. Increasing the size of the window increases the accuracy of measurements but reduces the resolution as we wont get any finer details of the fluid flow within the window. Particle Tracking Velocimetry uses fewer particles to be able to increase the resolution of the predictions but becomes more and more difficult to track particles and the predictions are far and few in between. So, there is a tradeoff between accuracy and resolution in both cases. 
 
 The objective of this project is to use AI to solve this tradeoff.
@@ -14,8 +16,16 @@ The idea is to apply deep learning to make predictions. Given the velocity measu
 
 ![The inputs of the network time and position and the network spits out velocity in x and y directions](https://user-images.githubusercontent.com/25951391/78628223-67a3fc00-7848-11ea-9470-d5606d15df9b.png)
 
+The inputs of the network time and position and the network spits out velocity in x and y directions
+
 So, we need to implement the governing equations of the flow on the neural network as well. A Deep Neural Network performs backpropogation to change the weights of the network in order to minimize a prediction loss. In a normal regression modeling approach, the loss would be rmse between the actual values and the predictions (in our case between measurements from PIV/PTV and predictions of DNN). We now add the residual of the governing equations of the fluid to the loss function as well. For example, one of the governing equations we may want to implement is the 'conservation of mass' or 'continuity equation'. 
 ![The continutity equation](https://user-images.githubusercontent.com/25951391/78628442-f9ac0480-7848-11ea-95eb-0543ecddb8ff.png)
+
+The continutity equation
+
 ![The residual of the continuity equation](https://user-images.githubusercontent.com/25951391/78628443-fa449b00-7848-11ea-9918-e811f235eb63.png)
+
+The residual of the continuity equation
+
 By adding the residual to the loss function, we minimize the residual which is effectively implementing the continuity equation on the predictions. 
 
